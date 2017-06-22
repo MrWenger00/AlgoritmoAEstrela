@@ -3,7 +3,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,7 +15,6 @@ public class AEstrela {
 	static No[][] matriz;
 	static int linhas;
 	static int colunas;
-	static Fila fila = new Fila();
 
 	public static void main(String[] args) {
 
@@ -61,21 +59,10 @@ public class AEstrela {
 
 				matriz[Integer.parseInt(aux[0])][Integer.parseInt(aux[1])] = no;
 			}
-			int t = Integer.parseInt(d[0]);
-			int t1 = Integer.parseInt(d[1]);
-			for (int i = 0; i < t; i++) {
-				for (int j = 0; j < t1; j++) {
-					No n = new No();
-					n = matriz[i][j];
-					System.out.print(n.valor + " ");
-				}
-				System.out.println();
-
-			}
+			
 			linhas = Integer.parseInt(d[0]);
 			colunas = Integer.parseInt(d[1]);
 			String coordenadas = encontrarOrigemDestino(matriz, linhas, colunas);
-//			System.out.println(coordenadas);
 			String[] od = coordenadas.split(";");
 			String[] origem = od[0].split(",");
 			String[] destino = od[1].split(",");
@@ -101,13 +88,11 @@ public class AEstrela {
 		No[] vizinhos = verificarVizinhos(oi, oj);
 		vizinhos = ordenar(vizinhos);
 		String lista = "";
-		System.out.println(vizinhos[0].lin + " " + vizinhos[0].col + " " + vizinhos[0].distancia);
 
 		while (!caminhoEncontrado) {
 			lista += vizinhos[0].lin + "-" + vizinhos[0].col + ";";
 			vizinhos = verificarVizinhos(vizinhos[0].lin, vizinhos[0].col);
 			vizinhos = ordenar(vizinhos);
-			System.out.println(vizinhos[0].lin + " " + vizinhos[0].col + " " + vizinhos[0].distancia);
 
 			if ((vizinhos[0].lin == di) && (vizinhos[0].col == dj)) {
 				caminhoEncontrado = true;
@@ -148,7 +133,6 @@ public class AEstrela {
 		for (int i = 0; i < vizinhos.length; i++) {
 			vizinhos[i] = v[i];
 		}
-		System.out.println();
 
 		return vizinhos;
 
