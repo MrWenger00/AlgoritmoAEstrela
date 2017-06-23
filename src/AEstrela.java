@@ -12,10 +12,6 @@ import java.util.logging.Logger;
 
 public class AEstrela {
 
-	/**
-	 * @param args
-	 *            the command line arguments
-	 */
 	static No[][] matriz;
 	static int linhas;
 	static int colunas;
