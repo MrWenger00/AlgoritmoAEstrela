@@ -69,7 +69,30 @@ public class AEstrela {
 			int oi = Integer.parseInt(origem[0]);
 			int oj = Integer.parseInt(origem[1]);
 			int di = Integer.parseInt(destino[0]);
-			int dj = Integer.parseInt(destino[1]);
+			int dj = Integer.parseInt(destino[1]);			
+			
+			
+			System.out.println("Matriz Original:");
+			
+			for (int i = 0; i < linhas; i++) {
+				for (int j = 0; j < colunas; j++) {
+					System.out.print(matriz[i][j].valor+" ");
+				}
+				System.out.println();
+			}
+			
+			System.out.println();
+			System.out.println("Matriz Percorrida");
+			
+			for (int i = 0; i < linhas; i++) {
+				for (int j = 0; j < colunas; j++) {
+					System.out.print(matriz[i][j].valor+" ");
+				}
+				System.out.println();
+			}
+			
+			System.out.println();
+			System.out.println("Caminho");
 			System.out.println(aEstrela(matriz, oi, oj, di, dj));
 
 			br.close();
@@ -88,11 +111,14 @@ public class AEstrela {
 		No[] vizinhos = verificarVizinhos(oi, oj);
 		vizinhos = ordenar(vizinhos);
 		String lista = "";
+		matriz[oi][oj].valor = 4;
+		matriz[vizinhos[0].lin][vizinhos[0].col].valor = 4;
 
 		while (!caminhoEncontrado) {
 			lista += vizinhos[0].lin + "-" + vizinhos[0].col + ";";
 			vizinhos = verificarVizinhos(vizinhos[0].lin, vizinhos[0].col);
 			vizinhos = ordenar(vizinhos);
+			matriz[vizinhos[0].lin][vizinhos[0].col].valor = 4; 
 
 			if ((vizinhos[0].lin == di) && (vizinhos[0].col == dj)) {
 				caminhoEncontrado = true;
