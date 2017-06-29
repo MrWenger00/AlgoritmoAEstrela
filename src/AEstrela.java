@@ -1,5 +1,7 @@
 /** @author Guilherme Wenger
- *  @author Fl�vio Prado
+ *  @author Flávio Prado
+ *  @author João Paulo
+ *  @author Tharlyson 
  * */
 
 import java.io.BufferedReader;
