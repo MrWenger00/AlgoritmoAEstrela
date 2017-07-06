@@ -17,6 +17,7 @@ public class AEstrela {
 	static No[][] matriz;
 	static int linhas;
 	static int colunas;
+	static int livres;
 
 	public static void main(String[] args) {
 
@@ -75,28 +76,17 @@ public class AEstrela {
 			
 			
 			System.out.println("Matriz Original:");
-			
-			for (int i = 0; i < linhas; i++) {
-				for (int j = 0; j < colunas; j++) {
-					System.out.print(matriz[i][j].valor+" ");
-				}
-				System.out.println();
-			}
+			System.out.println();
+			escreverMatriz(matriz);
 			
 			System.out.println();
 			System.out.println("Matriz Percorrida");
 			
-			for (int i = 0; i < linhas; i++) {
-				for (int j = 0; j < colunas; j++) {
-					System.out.print(matriz[i][j].valor+" ");
-				}
-				System.out.println();
-			}
-			
 			System.out.println();
 			System.out.println("Caminho");
-			System.out.println(aEstrela(matriz, oi, oj, di, dj));
-
+			System.out.println();
+			System.out.println(aEstrela( oi, oj, di, dj));
+			
 			br.close();
 		} catch (FileNotFoundException ex) {
 			Logger.getLogger(AEstrela.class.getName()).log(Level.SEVERE, null, ex);
@@ -106,28 +96,45 @@ public class AEstrela {
 
 	}
 
-	public static String aEstrela(No[][] m, int oi, int oj, int di, int dj) {
+	public static String aEstrela(int oi, int oj, int di, int dj) {
 
 		boolean caminhoEncontrado = false;
+		boolean destinoBloqueado = false;
+		int cont = 1;
 		definirDistancia(di, dj);
 		No[] vizinhos = verificarVizinhos(oi, oj);
+		No[] vizinhosDestino = verificarVizinhos(di, dj);
 		vizinhos = ordenar(vizinhos);
 		String lista = "";
 		matriz[oi][oj].valor = 4;
+		lista += oi + "-" + oj + ";";
 		matriz[vizinhos[0].lin][vizinhos[0].col].valor = 4;
-
-		while (!caminhoEncontrado) {
-			lista += vizinhos[0].lin + "-" + vizinhos[0].col + ";";
-			vizinhos = verificarVizinhos(vizinhos[0].lin, vizinhos[0].col);
-			vizinhos = ordenar(vizinhos);
-			matriz[vizinhos[0].lin][vizinhos[0].col].valor = 4; 
-
+		cont++;
+		while (!caminhoEncontrado && !destinoBloqueado) {
+			
 			if ((vizinhos[0].lin == di) && (vizinhos[0].col == dj)) {
 				caminhoEncontrado = true;
 				lista += vizinhos[0].lin + "-" + vizinhos[0].col + ";";
+			}else if(vizinhosDestino.length == 0){
+				destinoBloqueado = true;
+				lista = "Não é possível chegar ao destino, caminho bloqueado";
+			}else if(cont == (livres-(vizinhosDestino.length+1))){
+				destinoBloqueado = true;
+				lista = "Não é possível chegar ao destino, caminho bloqueado";
+			}else{
+				lista += vizinhos[0].lin + "-" + vizinhos[0].col + ";";
+				vizinhos = verificarVizinhos(vizinhos[0].lin, vizinhos[0].col);
+				vizinhos = ordenar(vizinhos);
+				matriz[vizinhos[0].lin][vizinhos[0].col].valor = 4; 
+				cont++;
 			}
+			
+			
 
 		}
+		
+		escreverMatriz(matriz);
+		System.out.println();
 
 		return lista;
 
@@ -242,6 +249,10 @@ public class AEstrela {
 				} else if (n.destino) {
 					destino += i + "," + j;
 				}
+				
+				if(n.valor == 0){
+					livres++;
+				}
 			}
 		}
 
@@ -266,5 +277,14 @@ public class AEstrela {
 
 		}
 		return v;
+	}
+	
+	public static void escreverMatriz(No[][] m){
+		for (int i = 0; i < linhas; i++) {
+			for (int j = 0; j < colunas; j++) {
+				System.out.print(m[i][j].valor+" ");
+			}
+			System.out.println();
+		}
 	}
 }
