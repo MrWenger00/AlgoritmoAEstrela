@@ -1,6 +1,8 @@
+
 /** @author Guilherme Wenger
- *  @author FlÃ¡vio Prado
- *  @author JoÃ£o Paulo
+ *  @author Guilherme Maeda
+ *  @author Flavio Prado
+ *  @author Joao Paulo
  *  @author Tharlyson 
  * */
 
@@ -17,7 +19,8 @@ public class AEstrela {
 	static No[][] matriz;
 	static int linhas;
 	static int colunas;
-	static int livres;
+	static int livres = 0;
+	static int ocupados = 0;
 
 	public static void main(String[] args) {
 
@@ -62,7 +65,7 @@ public class AEstrela {
 
 				matriz[Integer.parseInt(aux[0])][Integer.parseInt(aux[1])] = no;
 			}
-			
+
 			linhas = Integer.parseInt(d[0]);
 			colunas = Integer.parseInt(d[1]);
 			String coordenadas = encontrarOrigemDestino(matriz, linhas, colunas);
@@ -72,21 +75,20 @@ public class AEstrela {
 			int oi = Integer.parseInt(origem[0]);
 			int oj = Integer.parseInt(origem[1]);
 			int di = Integer.parseInt(destino[0]);
-			int dj = Integer.parseInt(destino[1]);			
-			
-			
+			int dj = Integer.parseInt(destino[1]);
+
 			System.out.println("Matriz Original:");
 			System.out.println();
 			escreverMatriz(matriz);
-			
+
 			System.out.println();
 			System.out.println("Matriz Percorrida");
-			
+
 			System.out.println();
 			System.out.println("Caminho");
 			System.out.println();
-			System.out.println(aEstrela( oi, oj, di, dj));
-			
+			System.out.println(aEstrela(oi, oj, di, dj));
+
 			br.close();
 		} catch (FileNotFoundException ex) {
 			Logger.getLogger(AEstrela.class.getName()).log(Level.SEVERE, null, ex);
@@ -100,39 +102,77 @@ public class AEstrela {
 
 		boolean caminhoEncontrado = false;
 		boolean destinoBloqueado = false;
-		int cont = 1;
+		int cont = 0;
 		definirDistancia(di, dj);
 		No[] vizinhos = verificarVizinhos(oi, oj);
 		No[] vizinhosDestino = verificarVizinhos(di, dj);
-		vizinhos = ordenar(vizinhos);
+		String[] visitados = new String[(colunas * linhas) - ocupados];
 		String lista = "";
-		matriz[oi][oj].valor = 4;
-		lista += oi + "-" + oj + ";";
-		matriz[vizinhos[0].lin][vizinhos[0].col].valor = 4;
-		cont++;
-		while (!caminhoEncontrado && !destinoBloqueado) {
-			
-			if ((vizinhos[0].lin == di) && (vizinhos[0].col == dj)) {
-				caminhoEncontrado = true;
-				lista += vizinhos[0].lin + "-" + vizinhos[0].col + ";";
-			}else if(vizinhosDestino.length == 0){
-				destinoBloqueado = true;
-				lista = "Não é possível chegar ao destino, caminho bloqueado";
-			}else if(cont == (livres-(vizinhosDestino.length+1))){
-				destinoBloqueado = true;
-				lista = "Não é possível chegar ao destino, caminho bloqueado";
-			}else{
-				lista += vizinhos[0].lin + "-" + vizinhos[0].col + ";";
-				vizinhos = verificarVizinhos(vizinhos[0].lin, vizinhos[0].col);
-				vizinhos = ordenar(vizinhos);
-				matriz[vizinhos[0].lin][vizinhos[0].col].valor = 4; 
-				cont++;
-			}
-			
-			
 
+		if (vizinhos.length > 0) {
+			vizinhos = ordenar(vizinhos);
+			matriz[oi][oj].valor = 4;
+			lista += oi + "-" + oj + ";";
+			matriz[vizinhos[0].lin][vizinhos[0].col].valor = 4;
+
+		} else {
+			destinoBloqueado = true;
+			lista = "Não é possível chegar ao destino, caminho bloqueado";
 		}
-		
+
+		while (!caminhoEncontrado && !destinoBloqueado) {
+
+			vizinhos = verificarVizinhos(vizinhos[0].lin, vizinhos[0].col);
+			vizinhos = ordenar(vizinhos);
+
+			if ((vizinhosDestino.length == 0)) {
+				destinoBloqueado = true;
+				lista = "Não é possível chegar ao destino, caminho bloqueado";
+			} else {
+				if ((vizinhos.length == 0)) {
+
+					boolean encerrado = false;
+					int i = cont - 1;
+
+					while ((i >= 0)) {
+
+						String[] p = visitados[i].split(";");
+						vizinhos = verificarVizinhos(Integer.parseInt(p[0]), Integer.parseInt(p[1]));
+						vizinhos = ordenar(vizinhos);
+
+						if (vizinhos.length > 0) {
+							i = -1;
+						}
+
+						if (i == 0 && vizinhos.length == 0) {
+							encerrado = true;
+						}
+						i--;
+					}
+					if (encerrado) {
+
+						destinoBloqueado = true;
+						lista = "Não é possível chegar ao destino, caminho bloqueado";
+					}
+				}
+
+				if ((vizinhos[0].lin == di) && (vizinhos[0].col == dj)) {
+
+					caminhoEncontrado = true;
+					lista += vizinhos[0].lin + "-" + vizinhos[0].col + ";";
+					matriz[vizinhos[0].lin][vizinhos[0].col].valor = 4;
+
+				} else {
+
+					lista += vizinhos[0].lin + "-" + vizinhos[0].col + ";";
+					matriz[vizinhos[0].lin][vizinhos[0].col].valor = 4;
+					visitados[cont] = vizinhos[0].lin + ";" + vizinhos[0].col;
+					cont++;
+
+				}
+			}
+		}
+
 		escreverMatriz(matriz);
 		System.out.println();
 
@@ -159,14 +199,19 @@ public class AEstrela {
 				} else if (((i == oi) && ((j == oj - 1) || (j == oj + 1))) && (matriz[i][j].valor == 0)) {
 					v[cont] = matriz[i][j];
 					cont++;
+				} else if ((((j == oj) && ((i == oi - 1) || (i == oi + 1))) && (matriz[i][j].valor == 0))) {
+					v[cont] = matriz[i][j];
+					cont++;
 				}
 			}
 
 		}
-
 		vizinhos = new No[cont];
-		for (int i = 0; i < vizinhos.length; i++) {
-			vizinhos[i] = v[i];
+		if (cont > 0) {
+
+			for (int i = 0; i < vizinhos.length; i++) {
+				vizinhos[i] = v[i];
+			}
 		}
 
 		return vizinhos;
@@ -228,9 +273,9 @@ public class AEstrela {
 					}
 				}
 			}
-			
+
 			if ((j == dj) && (i == di)) {
-				
+
 				chegou = true;
 			}
 		}
@@ -249,9 +294,13 @@ public class AEstrela {
 				} else if (n.destino) {
 					destino += i + "," + j;
 				}
-				
-				if(n.valor == 0){
+
+				if (n.valor == 0) {
 					livres++;
+				}
+
+				if (n.valor == 1) {
+					ocupados++;
 				}
 			}
 		}
@@ -265,7 +314,7 @@ public class AEstrela {
 		for (i = 0; i < (v.length - 1); i++) {
 			min = i;
 			for (j = (i + 1); j < v.length; j++) {
-				if (v[j].distancia < v[min].distancia) {
+				if ((v[j].distancia < v[min].distancia)) {
 					min = j;
 				}
 			}
@@ -278,11 +327,11 @@ public class AEstrela {
 		}
 		return v;
 	}
-	
-	public static void escreverMatriz(No[][] m){
+
+	public static void escreverMatriz(No[][] m) {
 		for (int i = 0; i < linhas; i++) {
 			for (int j = 0; j < colunas; j++) {
-				System.out.print(m[i][j].valor+" ");
+				System.out.print(m[i][j].valor + " ");
 			}
 			System.out.println();
 		}
